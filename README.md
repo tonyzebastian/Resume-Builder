@@ -83,6 +83,7 @@ Click "Download PDF" to generate a professional PDF resume that matches the prev
 - **[Radix UI](https://www.radix-ui.com/)** - Accessible components
 - **[pdf-lib](https://pdf-lib.js.org/)** - PDF generation
 - **[Lucide React](https://lucide.dev/)** - Icons
+- **[Vercel Speed Insights](https://vercel.com/docs/speed-insights)** - Performance monitoring
 
 ## 🎨 Design Philosophy
 
@@ -152,9 +153,24 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 
 ## 🐛 Known Issues
 
-- Large bundle size (~687KB) - working on code splitting
+- Large bundle size (~689KB) - working on code splitting
 - PDF generation might be slow on older devices
 - Some special characters may not render in PDF exports
+
+## 🚀 Deployment
+
+This app is optimized for **Vercel deployment** with built-in Speed Insights:
+
+### Deploy to Vercel
+1. Push your code to GitHub
+2. Connect your repository to [Vercel](https://vercel.com)
+3. Deploy automatically with zero configuration
+4. Speed Insights will automatically track performance metrics
+
+### Other Deployment Options
+- **Netlify**: Drag and drop the `dist` folder
+- **GitHub Pages**: Enable Pages in repository settings
+- **Any static host**: Upload the `dist` folder after running `npm run build`
 
 ## 🔒 Privacy & Security
 
