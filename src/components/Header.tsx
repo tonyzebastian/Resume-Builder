@@ -1,24 +1,36 @@
 import React from 'react';
+import { toast } from 'sonner';
 import UIGlowLogoMini from './ui/LogoMini';
 import { generateResumePDF, downloadPDF } from '../utils/pdfGenerator';
 import { ResumeData } from '../types/ResumeData';
 import { Github, Download } from 'lucide-react';
 
 interface HeaderProps {
-  onDownloadPDF?: () => void;
-  resumeData?: ResumeData;
+  resumeData: ResumeData;
 }
 
-export default function Header({ onDownloadPDF, resumeData }: HeaderProps) {
+export default function Header({ resumeData }: HeaderProps) {
   const handleDownloadPDF = async () => {
-    if (onDownloadPDF) {
-      onDownloadPDF();
-    } else if (resumeData) {
+    if (resumeData) {
+      // Show loading toast
+      const loadingToast = toast.loading('Generating PDF...');
+
       try {
         const pdfBytes = await generateResumePDF(resumeData);
-        downloadPDF(pdfBytes, `${resumeData.personalInfo.name.replace(/\s+/g, '_')}_Resume.pdf`);
+        const filename = `${resumeData.personalInfo.name.replace(/\s+/g, '_')}_Resume.pdf`;
+        downloadPDF(pdfBytes, filename);
+        
+        // Show success toast
+        toast.success('PDF downloaded successfully!', {
+          id: loadingToast
+        });
       } catch (error) {
         console.error('PDF generation failed:', error);
+        
+        // Show error toast
+        toast.error('Failed to generate PDF', {
+          id: loadingToast
+        });
       }
     }
   };

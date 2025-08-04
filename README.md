@@ -83,6 +83,7 @@ Click "Download PDF" to generate a professional PDF resume that matches the prev
 - **[Radix UI](https://www.radix-ui.com/)** - Accessible components
 - **[pdf-lib](https://pdf-lib.js.org/)** - PDF generation
 - **[Lucide React](https://lucide.dev/)** - Icons
+- **[Sonner](https://sonner.emilkowal.ski/)** - Toast notifications
 - **[Vercel Speed Insights](https://vercel.com/docs/speed-insights)** - Performance monitoring
 
 ## 🎨 Design Philosophy
@@ -153,7 +154,7 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 
 ## 🐛 Known Issues
 
-- Large bundle size (~689KB) - working on code splitting
+- Large bundle size (~724KB) - working on code splitting
 - PDF generation might be slow on older devices
 - Some special characters may not render in PDF exports
 

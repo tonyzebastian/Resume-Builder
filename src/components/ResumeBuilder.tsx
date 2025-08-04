@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import {
   ResumeProvider,
   useResumeData,
@@ -8,22 +7,11 @@ import { ExperienceSection } from "./sections/ExperienceSection";
 import { SkillsSection } from "./sections/SkillsSection";
 import { ResumePreview } from "./preview/ResumePreview";
 import Header from "./Header";
-import { Alert, AlertDescription } from "./ui/alert";
 import { ScrollArea } from "./ui/scroll-area";
-import {
-  AlertCircle,
-  CheckCircle,
-} from "lucide-react";
 import { generateMockExperience } from "../utils/mockData";
-import {
-  generateResumePDF,
-  downloadPDF,
-} from "../utils/pdfGenerator";
 
 function ResumeBuilderContent() {
   const { resumeData, dispatch } = useResumeData();
-  const [pdfError, setPdfError] = useState<string | null>(null);
-  const [pdfSuccess, setPdfSuccess] = useState(false);
 
   // Handle adding new experience
   const handleAddExperience = () => {
@@ -34,52 +22,10 @@ function ResumeBuilderContent() {
     });
   };
 
-  // Handle PDF generation
-  const handleGeneratePDF = async () => {
-    setPdfError(null);
-    setPdfSuccess(false);
-
-    try {
-      const pdfBytes = await generateResumePDF(resumeData);
-      const filename = `${resumeData.personalInfo.name.replace(/\s+/g, "_")}_Resume.pdf`;
-      downloadPDF(pdfBytes, filename);
-
-      setPdfSuccess(true);
-      setTimeout(() => setPdfSuccess(false), 3000);
-    } catch (error) {
-      console.error("PDF generation failed:", error);
-      setPdfError(
-        error instanceof Error
-          ? error.message
-          : "Failed to generate PDF",
-      );
-    }
-  };
-
   return (
     <div className="h-screen bg-background flex flex-col">
       {/* Header */}
-      <Header onDownloadPDF={handleGeneratePDF} resumeData={resumeData} />
-
-      {/* Notifications */}
-      {(pdfError || pdfSuccess) && (
-        <div className="px-6 py-2 flex-shrink-0">
-          {pdfError && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{pdfError}</AlertDescription>
-            </Alert>
-          )}
-          {pdfSuccess && (
-            <Alert className="border-green-200 bg-green-50 text-green-800">
-              <CheckCircle className="h-4 w-4" />
-              <AlertDescription>
-                PDF downloaded successfully!
-              </AlertDescription>
-            </Alert>
-          )}
-        </div>
-      )}
+      <Header resumeData={resumeData} />
 
       {/* Main Content Area - Two Columns */}
       <div className="flex flex-1 min-h-0">
