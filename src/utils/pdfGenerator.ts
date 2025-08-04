@@ -382,28 +382,6 @@ export class PDFGenerator {
     }
   }
 
-  private async addLinks(personalInfo: ResumeData['personalInfo']) {
-    // Links section - match preview layout exactly
-    const website = personalInfo.website || 'tonyzeb.design';
-    
-    this.currentPage.drawText(this.sanitizeText(website), {
-      x: this.options.layout.rightColumnX,
-      y: this.rightColumnY,
-      size: this.options.fonts.small.size,
-      font: this.fonts.regular,
-      color: rgb(...this.options.colors.slate800),
-    });
-    this.rightColumnY -= this.options.fonts.small.lineHeight; // Use consistent line height
-
-    this.currentPage.drawText(this.sanitizeText(personalInfo.email), {
-      x: this.options.layout.rightColumnX,
-      y: this.rightColumnY,
-      size: this.options.fonts.small.size,
-      font: this.fonts.regular,
-      color: rgb(...this.options.colors.slate800),
-    });
-    this.rightColumnY -= this.options.fonts.small.lineHeight + 32; // line height + gap-8
-  }
 
   private async addSkills(skills: ResumeData['skills']) {
     // Skills section header
@@ -558,7 +536,7 @@ export async function generateResumePDF(resumeData: ResumeData): Promise<Uint8Ar
 
 // Download utility
 export function downloadPDF(pdfBytes: Uint8Array, filename: string = 'resume.pdf') {
-  const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+  const blob = new Blob([pdfBytes as BlobPart], { type: 'application/pdf' });
   const url = URL.createObjectURL(blob);
   
   const link = document.createElement('a');
