@@ -26,8 +26,8 @@ A modern, clean resume builder designed for maximum ATS compatibility and profes
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/simple-resume-builder.git
-   cd simple-resume-builder
+   git clone git@github.com:tonyzebastian/Resume-Builder.git
+   cd Resume-Builder
    ```
 
 2. **Install dependencies**
@@ -190,8 +190,8 @@ See [cursor.md](cursor.md) for detailed improvement plans.
 Having issues? Please check:
 
 1. **FAQ**: Common questions and solutions
-2. **Issues**: [GitHub Issues](https://github.com/yourusername/simple-resume-builder/issues)
-3. **Discussions**: [GitHub Discussions](https://github.com/yourusername/simple-resume-builder/discussions)
+2. **Issues**: [GitHub Issues](https://github.com/tonyzebastian/Resume-Builder/issues)
+3. **Discussions**: [GitHub Discussions](https://github.com/tonyzebastian/Resume-Builder/discussions)
 
 ---
 
