@@ -17,5 +17,18 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
-  }
+    // Ensure fonts are copied to dist
+    rollupOptions: {
+      output: {
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.names && assetInfo.names[0] && assetInfo.names[0].endsWith('.ttf')) {
+            return 'fonts/[name].[ext]';
+          }
+          return 'assets/[name]-[hash].[ext]';
+        }
+      }
+    }
+  },
+  // Ensure public files are properly served
+  publicDir: 'public'
 })

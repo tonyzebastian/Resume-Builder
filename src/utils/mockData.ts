@@ -14,7 +14,7 @@ export function generateDefaultPersonalInfo(): PersonalInfo {
     name: 'Tony Sebastian',
     title: 'Senior Product Designer',
     subTitle: 'Design Systems & UX Foundation',
-    email: 'tonyzebastian@gmail.com',
+    email: 'xxxx_xxxx@gmail.com',
     website: 'tonyzeb.design',
   };
 }
@@ -26,50 +26,40 @@ export function generateDefaultExperience(): Experience[] {
       company: 'Postman',
       position: 'Senior Product Designer',
       location: 'Bengaluru, India',
-      startDate: '2022-06-01',
-      endDate: '2025-06-01',
+      startDate: '06/2022',
+      endDate: '06/2025',
       current: false,
-      description: [
-        'Led and scaled Postman\'s design system as part of the UX Foundation: built and governed reusable components, improved app performance , embedded with Growth for cohesive experiences, defined Postman Vision 2024, and enabled rapid high-fidelity prototyping via a code-based Postman clone.',
-        'Spearheaded 0→1 API observability initiatives: drove hypothesis-led experiments (schema/collection generation, Live Collections, API Design Health), and partnered cross-functionally to validate and iterate on early product direction.'
-      ],
+      description: 'Led and scaled Postman\'s design system as part of the UX Foundation: built and governed reusable components, improved app performance, embedded with Growth for cohesive experiences, defined Postman Vision 2024, and enabled rapid high-fidelity prototyping via a code-based Postman clone.\n\nSpearheaded 0→1 API observability initiatives: drove hypothesis-led experiments (schema/collection generation, Live Collections, API Design Health), and partnered cross-functionally to validate and iterate on early product direction.',
     },
     {
       id: '2',
       company: 'Hypersonix',
       position: 'Senior Product Designer',
       location: 'Remote',
-      startDate: '2020-11-01',
-      endDate: '2022-05-01',
+      startDate: '11/2020',
+      endDate: '05/2022',
       current: false,
-      description: [
-        'Lead 0→1 development of a data analytics platform MVP—designing workflows for unified enterprise data ingestion, query-driven insight exploration, and rich trend visualizations through rapid ideation, prototyping, and user-informed validation.',
-        'Built and owned the company\'s first design system, Sonic, while leading all product design efforts; scaled the design function by hiring and onboarding designers and drove consistency across emerging features.'
-      ],
+      description: 'Lead 0→1 development of a data analytics platform MVP—designing workflows for unified enterprise data ingestion, query-driven insight exploration, and rich trend visualizations through rapid ideation, prototyping, and user-informed validation.\n\nBuilt and owned the company\'s first design system, Sonic, while leading all product design efforts; scaled the design function by hiring and onboarding designers and drove consistency across emerging features.',
     },
     {
       id: '3',
       company: 'tonyzeb.design',
       position: 'Freelancer Designer',
       location: 'Remote',
-      startDate: '2019-01-01',
-      endDate: '2020-10-01',
+      startDate: '01/2019',
+      endDate: '10/2020',
       current: false,
-      description: [
-        'Engaged long-term with AVRL to design cross-platform UX and illustrative interfaces for a decision-tree automation platform with an AI-powered voice system, while also delivering designs, illustration systems, and marketing assets for clients like Chatwoot, Scribd, EPI-USE, and Bioticslabs.'
-      ],
+      description: 'Engaged long-term with AVRL to design cross-platform UX and illustrative interfaces for a decision-tree automation platform with an AI-powered voice system, while also delivering designs, illustration systems, and marketing assets for clients like Chatwoot, Scribd, EPI-USE, and Bioticslabs.',
     },
     {
       id: '4',
       company: 'Infosys',
       position: 'Senior Associate Consultant',
       location: 'Mysuru, India',
-      startDate: '2016-04-01',
-      endDate: '2018-12-01',
+      startDate: '04/2016',
+      endDate: '12/2018',
       current: false,
-      description: [
-        'Owned analyst/product-owner efforts to re-engineer internal application workflows and improve user experience across Infosys tools.'
-      ],
+      description: 'Owned analyst/product-owner efforts to re-engineer internal application workflows and improve user experience across Infosys tools.',
     },
   ];
 }
@@ -82,7 +72,7 @@ export function generateDefaultSkills(): Skills {
         'System design',
         'Motion design',
         'Design to code workflows',
-        'Rapid Prototyping (design & Code)'
+        'Rapid Prototyping'
       ],
       'Code': [
         'HTML & CSS',
@@ -153,25 +143,31 @@ function getRandomItems<T>(array: T[], count: number): T[] {
 }
 
 /**
- * Generate a random date in the past
+ * Generate a random date in MM/YYYY format
  */
 function generateRandomDate(yearsBack: number = 10): string {
   const now = new Date();
-  const pastDate = new Date(now.getFullYear() - Math.random() * yearsBack, 
-                           Math.floor(Math.random() * 12), 
-                           Math.floor(Math.random() * 28) + 1);
-  return pastDate.toISOString().split('T')[0];
+  const pastYear = now.getFullYear() - Math.floor(Math.random() * yearsBack);
+  const month = Math.floor(Math.random() * 12) + 1;
+  return `${month.toString().padStart(2, '0')}/${pastYear}`;
 }
 
 /**
- * Generate a random date in the future relative to start date
+ * Generate a random end date in MM/YYYY format relative to start date
  */
 function generateEndDate(startDate: string, maxYears: number = 4): string {
-  const start = new Date(startDate);
-  const end = new Date(start.getFullYear() + Math.random() * maxYears + 1,
-                      start.getMonth() + Math.random() * 12,
-                      start.getDate());
-  return end.toISOString().split('T')[0];
+  // Parse MM/YYYY format
+  const [startMonth, startYear] = startDate.split('/').map(Number);
+  const startDate_obj = new Date(startYear, startMonth - 1); // Month is 0-indexed in Date
+  
+  // Generate end date 6 months to maxYears after start
+  const monthsToAdd = Math.floor(Math.random() * (maxYears * 12 - 6)) + 6;
+  const endDate_obj = new Date(startDate_obj.getFullYear(), startDate_obj.getMonth() + monthsToAdd);
+  
+  const endMonth = endDate_obj.getMonth() + 1; // Convert back to 1-indexed
+  const endYear = endDate_obj.getFullYear();
+  
+  return `${endMonth.toString().padStart(2, '0')}/${endYear}`;
 }
 
 /**
@@ -208,7 +204,7 @@ export function generateMockExperience(options: MockDataOptions = {}): Experienc
   const isCurrent = options.current ?? Math.random() < 0.3; // 30% chance of current position
   const endDate = isCurrent ? '' : generateEndDate(startDate);
   
-  // Generate 1-3 description bullet points
+  // Generate 1-3 description lines
   const descriptionCount = Math.floor(Math.random() * 3) + 1;
   const sampleDescriptions = [
     'Led cross-functional teams to deliver high-impact product features and improve user experience across multiple platforms.',
@@ -229,7 +225,7 @@ export function generateMockExperience(options: MockDataOptions = {}): Experienc
     startDate,
     endDate,
     current: isCurrent,
-    description: getRandomItems(sampleDescriptions, descriptionCount),
+    description: getRandomItems(sampleDescriptions, descriptionCount).join('\n\n'),
   };
 }
 
@@ -271,8 +267,8 @@ export function generateMockEducation(options: MockDataOptions = {}): Education 
     institution: 'University',
     degree: 'Bachelor of Science',
     field: 'Computer Science',
-    startDate: '2012-09-01',
-    endDate: '2016-05-01',
+    startDate: '09/2012',
+    endDate: '05/2016',
   };
 }
 

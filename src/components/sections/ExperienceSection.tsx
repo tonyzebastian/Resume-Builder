@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Experience, ValidationResult } from '../../types/ResumeData';
 import { validateExperience } from '../../utils/validation';
 import { Input } from '../ui/input';
+import { MonthYearInput } from '../ui/month-year-input';
 import { Textarea } from '../ui/textarea';
 import { Button } from '../ui/button';
 import { Switch } from '../ui/switch';
@@ -23,9 +24,10 @@ interface ExperienceItemProps {
   onUpdate: (updates: Partial<Experience>) => void;
   onRemove: () => void;
   index: number;
+  totalExperiences: number;
 }
 
-function ExperienceItem({ experience, onUpdate, onRemove, index }: ExperienceItemProps) {
+function ExperienceItem({ experience, onUpdate, onRemove, index, totalExperiences }: ExperienceItemProps) {
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
 
   // Handle field changes
@@ -46,30 +48,19 @@ function ExperienceItem({ experience, onUpdate, onRemove, index }: ExperienceIte
   };
 
   // Handle description changes
-  const handleDescriptionChange = (index: number, value: string) => {
-    const newDescription = [...experience.description];
-    newDescription[index] = value;
-    onUpdate({ description: newDescription });
-  };
-
-  const addDescriptionBullet = () => {
-    onUpdate({ description: [...experience.description, ''] });
-  };
-
-  const removeDescriptionBullet = (index: number) => {
-    const newDescription = experience.description.filter((_, i) => i !== index);
-    onUpdate({ description: newDescription });
+  const handleDescriptionChange = (value: string) => {
+    onUpdate({ description: value });
   };
 
   return (
-    <div className="space-y-4 pt-4 border-b pb-8 border-slate-100">
+    <div className="group space-y-4 pt-4 pb-4 ">
       <div className="flex items-center justify-between">
-        <h3 className="text-base font-medium">Experience {index + 1}</h3>
+        <h3 className="text-base font-medium tracking-wider text-slate-700">EXPERIENCE {totalExperiences - index}</h3>
         <Button
           variant="outline"
           size="sm"
           onClick={onRemove}
-          className="text-slate-700 hover:text-red-700 w-auto font-normal text"
+          className="opacity-0 group-hover:opacity-100 transition-opacity text-red-800 hover:text-red-600 w-auto font-normal text"
           aria-label="Remove experience"
         >
           <Trash2 className="h-4 w-4" />
@@ -85,7 +76,7 @@ function ExperienceItem({ experience, onUpdate, onRemove, index }: ExperienceIte
             value={experience.company}
             onChange={(e) => handleFieldChange('company', e.target.value)}
             onBlur={() => handleFieldBlur('company')}
-            placeholder="Company name"
+            helperText="Company name"
             className="bg-white border border-gray-300"
           />
         </div>
@@ -96,7 +87,7 @@ function ExperienceItem({ experience, onUpdate, onRemove, index }: ExperienceIte
             value={experience.position}
             onChange={(e) => handleFieldChange('position', e.target.value)}
             onBlur={() => handleFieldBlur('position')}
-            placeholder="Job title"
+            helperText="Job title"
             className="bg-white border border-gray-300"
           />
         </div>
@@ -107,7 +98,7 @@ function ExperienceItem({ experience, onUpdate, onRemove, index }: ExperienceIte
             value={experience.location}
             onChange={(e) => handleFieldChange('location', e.target.value)}
             onBlur={() => handleFieldBlur('location')}
-            placeholder="City, State"
+            helperText="City, State"
             className="bg-white border border-gray-300"
           />
         </div>
@@ -119,7 +110,6 @@ function ExperienceItem({ experience, onUpdate, onRemove, index }: ExperienceIte
               checked={experience.current}
               onCheckedChange={(checked) => handleFieldChange('current', checked)}
               aria-label="Current position"
-              className="data-[state=checked]:bg-primary"
             />
             <Label htmlFor={`current-${experience.id}`} className="text-sm font-medium text-slate-700">Current position</Label>
           </div>
@@ -130,71 +120,45 @@ function ExperienceItem({ experience, onUpdate, onRemove, index }: ExperienceIte
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <label className="text-sm font-medium text-slate-700">Start date</label>
-          <Input
-            type="date"
+          <MonthYearInput
             value={experience.startDate}
-            onChange={(e) => handleFieldChange('startDate', e.target.value)}
+            onChange={(value) => handleFieldChange('startDate', value)}
             onBlur={() => handleFieldBlur('startDate')}
-            className="bg-white border border-gray-300 "
+            className="bg-white border border-gray-300"
             aria-label="Start Date"
+            helperText="MM/YYYY"
           />
         </div>
 
         {!experience.current && (
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-700">End date</label>
-            <Input
-              type="date"
+            <MonthYearInput
               value={experience.endDate}
-              onChange={(e) => handleFieldChange('endDate', e.target.value)}
+              onChange={(value) => handleFieldChange('endDate', value)}
               onBlur={() => handleFieldBlur('endDate')}
-              min={experience.startDate}
               className="bg-white border border-gray-300"
               aria-label="End Date"
+              helperText="MM/YYYY"
             />
           </div>
         )}
       </div>
 
-      {/* Description Bullets */}
+      {/* Job Description */}
       <div className="space-y-2">
         <label className="text-sm font-medium text-slate-700">Job description</label>
-        <div className="space-y-3">
-          {experience.description.map((bullet, index) => (
-            <div key={index} className="flex gap-2">
-              <div className="flex-1">
-                <Textarea
-                  value={bullet}
-                  onChange={(e) => handleDescriptionChange(index, e.target.value)}
-                  placeholder="Describe your responsibilities and achievements..."
-                  className="bg-white border border-gray-300 min-h-[80px] resize-none"
-                  rows={3}
-                />
-              </div>
-              {experience.description.length > 1 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => removeDescriptionBullet(index)}
-                  className="text-slate-400 hover:text-slate-600 mt-2 w-auto"
-                  aria-label="Remove bullet point"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
-          ))}
-          
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={addDescriptionBullet}
-            className="w-auto border-slate-500 text-slate-700"
-          >
-            <Plus className="h-4 w-4 mr-1 " />
-            Add Description
-          </Button>
-        </div>
+        <Textarea
+          value={typeof experience.description === 'string' 
+            ? experience.description 
+            : Array.isArray(experience.description) 
+              ? (experience.description as string[]).join('\n\n') 
+              : ''}
+          onChange={(e) => handleDescriptionChange(e.target.value)}
+          helperText="Describe your responsibilities and achievements. Use line breaks to separate different points."
+          className="bg-white border border-gray-300 min-h-[120px] resize-y"
+          rows={5}
+        />
       </div>
     </div>
   );
@@ -211,8 +175,19 @@ export function ExperienceSection({
   return (
     <div className={className}>
       <div className="pt-12">
-        <h2 className="text-lg font-semibold">Work Experience</h2>
-        
+        <div className='flex justify-between items-center pb-2 border-b border-slate-200 mb-2'>
+          <h2 className="text-lg font-semibold">Work Experience</h2>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={onAdd}
+            className="w-auto hover:text-blue-500"
+          >
+            <Plus className="h-4 w-4" />
+            Add Experience
+          </Button>
+        </div>
+
         <div className="space-y-4 pb-4">
           {experiences.map((experience, index) => (
             <div key={experience.id}>
@@ -221,6 +196,7 @@ export function ExperienceSection({
                 onUpdate={(updates) => onUpdate(experience.id, updates)}
                 onRemove={() => onRemove(experience.id)}
                 index={index}
+                totalExperiences={experiences.length}
               />
               {index < experiences.length - 1 && <Separator className="my-0" />}
             </div>
@@ -232,19 +208,7 @@ export function ExperienceSection({
             </div>
           )}
         </div>
-        
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onAdd}
-          className="w-auto"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Add Experience
-        </Button>
       </div>
-      
-      <Separator className="my-8" />
     </div>
   );
 }

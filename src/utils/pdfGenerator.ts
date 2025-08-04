@@ -2,6 +2,41 @@ import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import { ResumeData } from '../types/ResumeData';
 // import { format, parseISO } from 'date-fns';
 
+// ============================================
+// FONT WEIGHT CONFIGURATION - Easy to modify!
+// ============================================
+// Available weights: 'regular', 'medium', 'semibold'
+// regular = Helvetica (normal weight)
+// medium = Helvetica Bold 
+// semibold = Helvetica Bold
+
+const FONT_WEIGHTS = {
+  // Hero Section
+  name: 'medium',                    // Tony Sebastian
+  title: 'medium',                  // Senior Product Designer
+  subTitle: 'regular',               // Design Systems & UX Foundation
+  website: 'regular',                // tonyzeb.design
+  email: 'regular',                  // email address
+  
+  // Experience Section
+  sectionHeaderExperience: 'semibold',  // "Experience" heading
+  companyName: 'medium',               // Postman, Hypersonix, etc.
+  position: 'regular',                  // Senior Product Designer, etc.
+  location: 'regular',                  // Bengaluru, India
+  dates: 'regular',                     // Jun 2022 - Present
+  description: 'regular',               // Job description text
+  
+  // Skills Section
+  sectionHeaderSkills: 'semibold',      // "Skills" heading
+  skillCategoryHeader: 'medium',      // Competencies, Code, Design
+  skillItems: 'regular',                // Individual skill items
+  
+  // Separators
+  separators: 'regular',                // All "/" characters
+} as const;
+
+type FontWeight = keyof typeof FONT_WEIGHTS;
+
 interface PDFGeneratorOptions {
   pageSize: {
     width: number;
@@ -40,7 +75,7 @@ const DEFAULT_OPTIONS: PDFGeneratorOptions = {
     height: 1123, // Match preview container height (1123px) 
   },
   margins: {
-    top: 64, // 16 * 4 to match top-16 from preview
+    top: 72, // 16 * 4 to match top-16 from preview
     bottom: 64,
     left: 64, // 16 * 4 to match left-16 from preview
     right: 64,
@@ -76,6 +111,12 @@ export class PDFGenerator {
 
   constructor(options: Partial<PDFGeneratorOptions> = {}) {
     this.options = { ...DEFAULT_OPTIONS, ...options };
+  }
+
+  // Helper method to get font by weight name
+  private getFont(weightKey: keyof typeof FONT_WEIGHTS) {
+    const weight = FONT_WEIGHTS[weightKey];
+    return this.fonts[weight] || this.fonts.regular;
   }
 
   private sanitizeText(text: string): string {
@@ -137,25 +178,24 @@ export class PDFGenerator {
   }
 
   private async loadFonts() {
+    console.log('🔄 Loading Helvetica fonts for PDF...');
+    
     try {
-      // Load IBM Plex Sans fonts
-      const regularResponse = await fetch('/fonts/IBMPlexSans-Regular.ttf');
-      const mediumResponse = await fetch('/fonts/IBMPlexSans-Medium.ttf');
-      
-      if (!regularResponse.ok || !mediumResponse.ok) {
-        throw new Error('Failed to load IBM Plex Sans fonts');
-      }
-      
-      const regularFontBytes = await regularResponse.arrayBuffer();
-      const mediumFontBytes = await mediumResponse.arrayBuffer();
-      
-      this.fonts.regular = await this.doc!.embedFont(regularFontBytes);
-      this.fonts.bold = await this.doc!.embedFont(mediumFontBytes); // Use Medium (500) for bold text
-    } catch (error) {
-      console.warn('Failed to load IBM Plex Sans fonts, falling back to Helvetica:', error);
-      // Fallback to standard fonts
+      // Use Helvetica fonts directly (no custom font loading)
       this.fonts.regular = await this.doc!.embedFont(StandardFonts.Helvetica);
-      this.fonts.bold = await this.doc!.embedFont(StandardFonts.HelveticaBold);
+      this.fonts.medium = await this.doc!.embedFont(StandardFonts.HelveticaBold);
+      this.fonts.semibold = await this.doc!.embedFont(StandardFonts.HelveticaBold);
+      
+      console.log('✅ Helvetica fonts loaded successfully');
+      console.log('Font objects verification:', {
+        regular: !!this.fonts.regular,
+        medium: !!this.fonts.medium,
+        semibold: !!this.fonts.semibold
+      });
+      
+    } catch (error) {
+      console.error('❌ Helvetica font loading failed:', error);
+      throw new Error('Failed to load Helvetica fonts for PDF generation');
     }
   }
 
@@ -175,6 +215,23 @@ export class PDFGenerator {
     const formatDate = (dateString: string) => {
       if (!dateString) return '';
       try {
+        // Handle MM/YYYY format
+        if (dateString.includes('/')) {
+          const [month, year] = dateString.split('/');
+          const monthNum = parseInt(month);
+          const yearNum = parseInt(year);
+          
+          // Validate month and year
+          if (monthNum >= 1 && monthNum <= 12 && yearNum > 1900 && yearNum < 2100) {
+            // Create date with day 1 to avoid timezone issues
+            const date = new Date(yearNum, monthNum - 1, 1);
+            return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+          }
+          
+          // If invalid, just return the original string
+          return dateString;
+        }
+        // Fallback for old YYYY-MM-DD format
         const date = new Date(dateString);
         return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
       } catch {
@@ -188,13 +245,22 @@ export class PDFGenerator {
   }
 
   private async addHeroSection(personalInfo: ResumeData['personalInfo']) {
+    // Hero sections are center-aligned (items-center in preview)
+    // Calculate vertical alignment offset to center the links with the hero content
+    const heroContentHeight = this.options.fonts.name.lineHeight + this.options.fonts.title.lineHeight + 4; // name + title + gap-1
+    const linksHeight = this.options.fonts.small.lineHeight * 2; // 2 links
+    const alignmentOffset = (heroContentHeight - linksHeight) / 2;
+    
+    // Store original right column position for center alignment
+    const originalRightY = this.rightColumnY;
+    
     // Hero Left Column - Name and Title
     // Name
     this.currentPage.drawText(this.sanitizeText(personalInfo.name), {
       x: this.options.layout.leftColumnX,
       y: this.leftColumnY,
       size: this.options.fonts.name.size,
-      font: this.fonts.bold,
+      font: this.getFont('name'),
       color: rgb(...this.options.colors.slate950),
     });
     this.leftColumnY -= this.options.fonts.name.lineHeight + 4; // gap-1
@@ -207,57 +273,71 @@ export class PDFGenerator {
       x: currentX,
       y: this.leftColumnY,
       size: this.options.fonts.title.size,
-      font: this.fonts.bold,
+      font: this.getFont('title'),
       color: rgb(...this.options.colors.slate950),
     });
     
-    const titleWidth = this.getTextWidth(personalInfo.title, this.options.fonts.title.size, true);
-    currentX += titleWidth + 8; // gap-2 (8px)
+    const titleWidth = this.getTextWidth(personalInfo.title, this.options.fonts.title.size, FONT_WEIGHTS.title);
+    currentX += titleWidth;
     
-    // Separator "/"
-    this.currentPage.drawText('/', {
-      x: currentX,
-      y: this.leftColumnY,
-      size: this.options.fonts.title.size,
-      font: this.fonts.regular,
-      color: rgb(...this.options.colors.slate950),
-    });
-    
-    currentX += this.getTextWidth('/', this.options.fonts.title.size, false) + 8; // actual "/" width + gap-2
-    
-    // Sub title
-    const subTitle = personalInfo.subTitle || 'Design Systems & UX Foundation';
-    this.currentPage.drawText(this.sanitizeText(subTitle), {
-      x: currentX,
-      y: this.leftColumnY,
-      size: this.options.fonts.title.size,
-      font: this.fonts.regular,
-      color: rgb(...this.options.colors.slate800),
-    });
+    // Only show separator and subTitle if subTitle exists
+    const subTitle = personalInfo.subTitle;
+    if (subTitle && subTitle.trim()) {
+      currentX += 4; // 4px spacing before slash
+      
+      // Separator "/" with precise positioning
+      this.currentPage.drawText('/', {
+        x: currentX,
+        y: this.leftColumnY,
+        size: this.options.fonts.title.size,
+        font: this.getFont('separators'),
+        color: rgb(...this.options.colors.slate950),
+      });
+      
+      // Calculate slash width and add 4px spacing after
+      const slashWidth = this.getTextWidth('/', this.options.fonts.title.size, FONT_WEIGHTS.separators);
+      currentX += slashWidth + 4; // slash width + 4px spacing after
+      
+      // Sub title
+      this.currentPage.drawText(this.sanitizeText(subTitle), {
+        x: currentX,
+        y: this.leftColumnY,
+        size: this.options.fonts.title.size,
+        font: this.getFont('subTitle'),
+        color: rgb(...this.options.colors.slate800),
+      });
+    }
 
-    // Hero Right Column - Links (Website and Email)
+    // Hero Right Column - Links (Website and Email) - Center aligned with hero content
     const website = personalInfo.website || 'tonyzeb.design';
+    
+    // Apply center alignment offset to right column
+    const alignedRightY = originalRightY - alignmentOffset;
     
     this.currentPage.drawText(this.sanitizeText(website), {
       x: this.options.layout.rightColumnX,
-      y: this.rightColumnY,
+      y: alignedRightY,
       size: this.options.fonts.small.size,
-      font: this.fonts.regular,
+      font: this.getFont('website'),
       color: rgb(...this.options.colors.slate800),
     });
-    this.rightColumnY -= this.options.fonts.small.lineHeight; // Use consistent line height
-
+    
     this.currentPage.drawText(this.sanitizeText(personalInfo.email), {
       x: this.options.layout.rightColumnX,
-      y: this.rightColumnY,
+      y: alignedRightY - this.options.fonts.small.lineHeight - 4, // Increased spacing by 4px
       size: this.options.fonts.small.size,
-      font: this.fonts.regular,
+      font: this.getFont('email'),
       color: rgb(...this.options.colors.slate800),
     });
     
     // Move both columns down for the next section (gap-8)
-    this.leftColumnY -= this.options.fonts.title.lineHeight + 32; // gap-8
-    this.rightColumnY -= this.options.fonts.small.lineHeight + 32; // gap-8
+    // Use the lowest point from either column
+    const finalLeftY = this.leftColumnY - this.options.fonts.title.lineHeight;
+    const finalRightY = alignedRightY - (this.options.fonts.small.lineHeight * 2) - 4; // Account for increased spacing
+    const lowestY = Math.min(finalLeftY, finalRightY);
+    
+    this.leftColumnY = lowestY - 32; // gap-8
+    this.rightColumnY = lowestY - 32; // gap-8
   }
 
   private async addBottomSection(experiences: ResumeData['experience'], skills: ResumeData['skills']) {
@@ -276,7 +356,7 @@ export class PDFGenerator {
       x: this.options.layout.leftColumnX,
       y: this.leftColumnY,
       size: this.options.fonts.sectionHeader.size,
-      font: this.fonts.bold,
+      font: this.getFont('sectionHeaderExperience'),
       color: rgb(...this.options.colors.slate950),
     });
     this.leftColumnY -= this.options.fonts.sectionHeader.lineHeight + 8; // gap-2
@@ -291,32 +371,34 @@ export class PDFGenerator {
         x: currentX,
         y: this.leftColumnY,
         size: this.options.fonts.title.size,
-        font: this.fonts.bold,
+        font: this.getFont('companyName'),
         color: rgb(...this.options.colors.slate950),
       });
       
-      const companyWidth = this.getTextWidth(exp.company, this.options.fonts.title.size, true);
-      currentX += companyWidth + 8; // gap-2 (8px)
+      const companyWidth = this.getTextWidth(exp.company, this.options.fonts.title.size, FONT_WEIGHTS.companyName);
+      currentX += companyWidth + 4; // 4px spacing before slash
       
       this.currentPage.drawText('/', {
         x: currentX,
         y: this.leftColumnY,
         size: this.options.fonts.title.size,
-        font: this.fonts.regular,
+        font: this.getFont('separators'),
         color: rgb(...this.options.colors.slate950),
       });
       
-      currentX += this.getTextWidth('/', this.options.fonts.title.size, false) + 8; // actual "/" width + gap-2
+      // Calculate slash width and add 4px spacing after
+      const slashWidth = this.getTextWidth('/', this.options.fonts.title.size, FONT_WEIGHTS.separators);
+      currentX += slashWidth + 4; // slash width + 4px spacing after
       
       this.currentPage.drawText(this.sanitizeText(exp.position), {
         x: currentX,
         y: this.leftColumnY,
         size: this.options.fonts.title.size,
-        font: this.fonts.regular,
+        font: this.getFont('position'),
         color: rgb(...this.options.colors.slate800),
       });
       
-      this.leftColumnY -= this.options.fonts.title.lineHeight;
+      this.leftColumnY -= this.options.fonts.title.lineHeight - 4; // Use negative margin mb-[-4px]
 
       // Location/Date line
       currentX = this.options.layout.leftColumnX;
@@ -325,38 +407,46 @@ export class PDFGenerator {
         x: currentX,
         y: this.leftColumnY,
         size: this.options.fonts.small.size,
-        font: this.fonts.regular,
+        font: this.getFont('location'),
         color: rgb(...this.options.colors.slate700),
       });
       
-      const locationWidth = this.getTextWidth(exp.location, this.options.fonts.small.size, false);
-      currentX += locationWidth + 8; // gap-2 (8px)
+      const locationWidth = this.getTextWidth(exp.location, this.options.fonts.small.size, FONT_WEIGHTS.location);
+      currentX += locationWidth + 4; // 4px spacing before slash
       
       this.currentPage.drawText('/', {
         x: currentX,
         y: this.leftColumnY,
         size: this.options.fonts.small.size,
-        font: this.fonts.regular,
+        font: this.getFont('separators'),
         color: rgb(...this.options.colors.slate700),
       });
       
-      currentX += this.getTextWidth('/', this.options.fonts.small.size, false) + 8; // actual "/" width + gap-2
+      // Calculate slash width and add 4px spacing after
+      const locationSlashWidth = this.getTextWidth('/', this.options.fonts.small.size, FONT_WEIGHTS.separators);
+      currentX += locationSlashWidth + 4; // slash width + 4px spacing after
       
       const dateRange = this.formatDateRange(exp.startDate, exp.endDate, exp.current);
       this.currentPage.drawText(this.sanitizeText(dateRange), {
         x: currentX,
         y: this.leftColumnY,
         size: this.options.fonts.small.size,
-        font: this.fonts.regular,
+        font: this.getFont('dates'),
         color: rgb(...this.options.colors.slate700),
       });
       
-      this.leftColumnY -= this.options.fonts.small.lineHeight + 4; // gap-1
+      this.leftColumnY -= this.options.fonts.title.lineHeight - 4; // Use title line height (28px) with negative margin mb-[-4px]
 
-      // Description
-      for (let j = 0; j < exp.description.length; j++) {
+      // Description - handle both string and array formats for backward compatibility
+      const description = typeof exp.description === 'string' 
+        ? exp.description 
+        : Array.isArray(exp.description) 
+          ? (exp.description as string[]).join('\n\n') 
+          : '';
+      const descriptionLines = description.split('\n').filter(line => line.trim() !== '');
+      for (let j = 0; j < descriptionLines.length; j++) {
         const wrappedText = this.wrapText(
-          this.sanitizeText(exp.description[j]), 
+          this.sanitizeText(descriptionLines[j]), 
           this.options.layout.leftColumnWidth
         );
         
@@ -365,13 +455,13 @@ export class PDFGenerator {
             x: this.options.layout.leftColumnX,
             y: this.leftColumnY,
             size: this.options.fonts.body.size,
-            font: this.fonts.regular,
+            font: this.getFont('description'),
             color: rgb(...this.options.colors.slate700),
           });
           this.leftColumnY -= this.options.fonts.body.lineHeight;
         }
         
-        if (j < exp.description.length - 1) {
+        if (j < descriptionLines.length - 1) {
           this.leftColumnY -= 8; // gap-2 between paragraphs
         }
       }
@@ -389,7 +479,7 @@ export class PDFGenerator {
       x: this.options.layout.rightColumnX,
       y: this.rightColumnY,
       size: this.options.fonts.sectionHeader.size,
-      font: this.fonts.bold,
+      font: this.getFont('sectionHeaderSkills'),
       color: rgb(...this.options.colors.slate950),
     });
     this.rightColumnY -= this.options.fonts.sectionHeader.lineHeight + 8; // gap-2
@@ -402,7 +492,7 @@ export class PDFGenerator {
             x: this.options.layout.rightColumnX,
             y: this.rightColumnY,
             size: this.options.fonts.skillCategory.size,
-            font: this.fonts.bold,
+            font: this.getFont('skillCategoryHeader'),
             color: rgb(...this.options.colors.slate700),
           });
           this.rightColumnY -= this.options.fonts.skillCategory.lineHeight;
@@ -412,7 +502,7 @@ export class PDFGenerator {
               x: this.options.layout.rightColumnX,
               y: this.rightColumnY,
               size: this.options.fonts.skillCategory.size,
-              font: this.fonts.regular,
+              font: this.getFont('skillItems'),
               color: rgb(...this.options.colors.slate700),
             });
             this.rightColumnY -= this.options.fonts.skillCategory.lineHeight;
@@ -427,7 +517,7 @@ export class PDFGenerator {
           x: this.options.layout.rightColumnX,
           y: this.rightColumnY,
           size: this.options.fonts.skillCategory.size,
-          font: this.fonts.bold,
+          font: this.getFont('skillCategoryHeader'),
           color: rgb(...this.options.colors.slate700),
         });
         this.rightColumnY -= this.options.fonts.skillCategory.lineHeight;
@@ -437,7 +527,7 @@ export class PDFGenerator {
             x: this.options.layout.rightColumnX,
             y: this.rightColumnY,
             size: this.options.fonts.skillCategory.size,
-            font: this.fonts.regular,
+            font: this.getFont('skillItems'),
             color: rgb(...this.options.colors.slate700),
           });
           this.rightColumnY -= this.options.fonts.skillCategory.lineHeight;
@@ -450,7 +540,7 @@ export class PDFGenerator {
           x: this.options.layout.rightColumnX,
           y: this.rightColumnY,
           size: this.options.fonts.skillCategory.size,
-          font: this.fonts.bold,
+          font: this.getFont('skillCategoryHeader'),
           color: rgb(...this.options.colors.slate700),
         });
         this.rightColumnY -= this.options.fonts.skillCategory.lineHeight;
@@ -460,7 +550,7 @@ export class PDFGenerator {
             x: this.options.layout.rightColumnX,
             y: this.rightColumnY,
             size: this.options.fonts.skillCategory.size,
-            font: this.fonts.regular,
+            font: this.getFont('skillItems'),
             color: rgb(...this.options.colors.slate700),
           });
           this.rightColumnY -= this.options.fonts.skillCategory.lineHeight;
@@ -473,7 +563,7 @@ export class PDFGenerator {
           x: this.options.layout.rightColumnX,
           y: this.rightColumnY,
           size: this.options.fonts.skillCategory.size,
-          font: this.fonts.bold,
+          font: this.getFont('skillCategoryHeader'),
           color: rgb(...this.options.colors.slate700),
         });
         this.rightColumnY -= this.options.fonts.skillCategory.lineHeight;
@@ -483,7 +573,7 @@ export class PDFGenerator {
             x: this.options.layout.rightColumnX,
             y: this.rightColumnY,
             size: this.options.fonts.skillCategory.size,
-            font: this.fonts.regular,
+            font: this.getFont('skillItems'),
             color: rgb(...this.options.colors.slate700),
           });
           this.rightColumnY -= this.options.fonts.skillCategory.lineHeight;
@@ -499,7 +589,7 @@ export class PDFGenerator {
 
     for (const word of words) {
       const testLine = currentLine + (currentLine ? ' ' : '') + word;
-      const testWidth = this.getTextWidth(testLine, this.options.fonts.body.size, false);
+      const testWidth = this.getTextWidth(testLine, this.options.fonts.body.size, 'regular');
       
       if (testWidth <= maxWidth) {
         currentLine = testLine;
@@ -520,10 +610,19 @@ export class PDFGenerator {
     return lines;
   }
 
-  private getTextWidth(text: string, fontSize: number, bold: boolean): number {
-    // Text width calculation for IBM Plex Sans
-    // IBM Plex Sans character width ratios (measured from font metrics)
-    const avgCharWidth = bold ? 0.58 : 0.56; // IBM Plex Sans Medium and Regular ratios
+  private getTextWidth(text: string, fontSize: number, weight: 'regular' | 'medium' | 'semibold' = 'regular'): number {
+    // Use actual font metrics from pdf-lib for more accurate width calculation
+    try {
+      const font = this.fonts[weight] || this.fonts.regular;
+      if (font && font.widthOfTextAtSize) {
+        return font.widthOfTextAtSize(text, fontSize);
+      }
+    } catch (error) {
+      console.warn('Font width calculation failed, using fallback:', error);
+    }
+    
+    // Fallback to rough approximation if font metrics unavailable
+    const avgCharWidth = weight === 'regular' ? 0.56 : 0.58;
     return text.length * fontSize * avgCharWidth;
   }
 }

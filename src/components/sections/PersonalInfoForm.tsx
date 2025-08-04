@@ -104,10 +104,8 @@ export function PersonalInfoForm({
 
   return (
     <div className={className}>
-      <div className="space-y-6 border-b pb-12 border-slate-300">
+      <div className="space-y-6 pb-2">
         <div>
-          <h2 className="text-lg font-semibold mb-4">Personal Information</h2>
-          
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -117,7 +115,7 @@ export function PersonalInfoForm({
                   value={data.name || ''}
                   onChange={(e) => handleFieldChange('name', e.target.value)}
                   onBlur={() => handleFieldBlur('name')}
-                  placeholder="Enter your full name"
+                  helperText="Enter your full name"
                   className="bg-white border border-gray-300"
                   aria-label="Full Name"
                 />
@@ -133,7 +131,7 @@ export function PersonalInfoForm({
                   value={data.title || ''}
                   onChange={(e) => handleFieldChange('title', e.target.value)}
                   onBlur={() => handleFieldBlur('title')}
-                  placeholder="e.g., Senior Product Designer"
+                  helperText="e.g., Senior Product Designer"
                   className="bg-white border border-gray-300"
                   aria-label="Professional Title"
                 />
@@ -150,7 +148,7 @@ export function PersonalInfoForm({
                 value={data.subTitle || ''}
                 onChange={(e) => handleFieldChange('subTitle', e.target.value)}
                 onBlur={() => handleFieldBlur('subTitle')}
-                placeholder="e.g., Design Systems & UX Foundation"
+                helperText="e.g., Design Systems & UX Foundation"
                 className="bg-white border border-gray-300"
                 aria-label="Sub Profession Title"
               />
@@ -164,7 +162,7 @@ export function PersonalInfoForm({
                   value={data.email || ''}
                   onChange={(e) => handleFieldChange('email', e.target.value)}
                   onBlur={() => handleFieldBlur('email')}
-                  placeholder="your.email@example.com"
+                  helperText="your.email@example.com"
                   className="bg-white border border-gray-300"
                   aria-label="Email Address"
                 />
@@ -180,7 +178,7 @@ export function PersonalInfoForm({
                   value={data.website || ''}
                   onChange={(e) => handleFieldChange('website', e.target.value)}
                   onBlur={() => handleFieldBlur('website')}
-                  placeholder="https://yourwebsite.com"
+                  helperText="https://yourwebsite.com"
                   className="bg-white border border-gray-300"
                   aria-label="Website"
                 />

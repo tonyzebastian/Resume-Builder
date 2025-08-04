@@ -7,12 +7,10 @@ import { PersonalInfoForm } from "./sections/PersonalInfoForm";
 import { ExperienceSection } from "./sections/ExperienceSection";
 import { SkillsSection } from "./sections/SkillsSection";
 import { ResumePreview } from "./preview/ResumePreview";
-import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
+import Header from "./Header";
 import { Alert, AlertDescription } from "./ui/alert";
 import { ScrollArea } from "./ui/scroll-area";
 import {
-  Download,
   AlertCircle,
   CheckCircle,
 } from "lucide-react";
@@ -23,9 +21,7 @@ import {
 } from "../utils/pdfGenerator";
 
 function ResumeBuilderContent() {
-  const { resumeData, dispatch, hasUnsavedChanges } =
-    useResumeData();
-  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const { resumeData, dispatch } = useResumeData();
   const [pdfError, setPdfError] = useState<string | null>(null);
   const [pdfSuccess, setPdfSuccess] = useState(false);
 
@@ -40,7 +36,6 @@ function ResumeBuilderContent() {
 
   // Handle PDF generation
   const handleGeneratePDF = async () => {
-    setIsGeneratingPDF(true);
     setPdfError(null);
     setPdfSuccess(false);
 
@@ -58,35 +53,13 @@ function ResumeBuilderContent() {
           ? error.message
           : "Failed to generate PDF",
       );
-    } finally {
-      setIsGeneratingPDF(false);
     }
   };
 
   return (
     <div className="h-screen bg-background flex flex-col">
-      {/* Full Width Header */}
-      <header className="border-b border-slate-100 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex-shrink-0">
-        <div className="flex h-14 items-center justify-between px-6">
-          <div className="flex items-center gap-2">
-            <h1 className="text-lg font-semibold">
-              The Simplest Resume Builder
-            </h1>
-          </div>
-
-          <div className="flex items-center gap-4">
-            {/* PDF download button */}
-            <Button
-              onClick={handleGeneratePDF}
-              variant="default"
-              className="w-auto bg-slate-950 text-slate-50 font-sans tracking-wide font-normal hover:bg-slate-700"
-            >
-              <Download className="h-4 w-4 text-slate-50" />
-              Download PDF
-            </Button>
-          </div>
-        </div>
-      </header>
+      {/* Header */}
+      <Header onDownloadPDF={handleGeneratePDF} resumeData={resumeData} />
 
       {/* Notifications */}
       {(pdfError || pdfSuccess) && (

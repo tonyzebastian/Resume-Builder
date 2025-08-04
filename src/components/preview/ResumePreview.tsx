@@ -11,6 +11,23 @@ export function ResumePreview({ data, className }: ResumePreviewProps) {
     const formatDate = (dateString: string) => {
       if (!dateString) return '';
       try {
+        // Handle MM/YYYY format
+        if (dateString.includes('/')) {
+          const [month, year] = dateString.split('/');
+          const monthNum = parseInt(month);
+          const yearNum = parseInt(year);
+          
+          // Validate month and year
+          if (monthNum >= 1 && monthNum <= 12 && yearNum > 1900 && yearNum < 2100) {
+            // Create date with day 1 to avoid timezone issues
+            const date = new Date(yearNum, monthNum - 1, 1);
+            return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+          }
+          
+          // If invalid, just return the original string
+          return dateString;
+        }
+        // Fallback for old YYYY-MM-DD format
         const date = new Date(dateString);
         return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
       } catch {
@@ -26,7 +43,7 @@ export function ResumePreview({ data, className }: ResumePreviewProps) {
       <div className="absolute left-16 top-16 flex flex-col gap-8 items-start justify-start">
         
         {/* Hero Section - Two Columns */}
-        <div className="flex flex-row gap-11 items-start justify-start w-full">
+        <div className="flex flex-row gap-11 items-center justify-start w-full">
           {/* Hero Content - Left Column */}
           <div className="flex flex-col gap-1 items-start justify-start w-[459px]" data-name="Hero">
             <div 
@@ -41,16 +58,21 @@ export function ResumePreview({ data, className }: ResumePreviewProps) {
               >
                 <p className="block leading-[28px] whitespace-pre">{personalInfo.title}</p>
               </div>
-              <div 
-                className="font-normal text-slate-950 whitespace-nowrap"
-              >
-                <p className="block leading-[28px] whitespace-pre">/</p>
-              </div>
-              <div 
-                className="font-normal text-slate-800 whitespace-nowrap"
-              >
-                <p className="block leading-[28px] whitespace-pre">{personalInfo.subTitle || 'Design Systems & UX Foundation'}</p>
-              </div>
+              {/* Only show separator and subTitle if subTitle exists */}
+              {personalInfo.subTitle && personalInfo.subTitle.trim() && (
+                <>
+                  <div 
+                    className="font-normal text-slate-950 whitespace-nowrap"
+                  >
+                    <p className="block leading-[28px] whitespace-pre">/</p>
+                  </div>
+                  <div 
+                    className="font-normal text-slate-800 whitespace-nowrap"
+                  >
+                    <p className="block leading-[28px] whitespace-pre">{personalInfo.subTitle}</p>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
@@ -122,12 +144,17 @@ export function ResumePreview({ data, className }: ResumePreviewProps) {
                   </div>
                   {/* Description */}
                   <div className="flex flex-col gap-2 items-start justify-start w-full text-[11px] leading-[21px] text-slate-700" data-name="description">
-                    {exp.description.map((desc, index) => (
+                    {(typeof exp.description === 'string' 
+                      ? exp.description.split('\n') 
+                      : Array.isArray(exp.description) 
+                        ? (exp.description as string[])
+                        : [exp.description || '']
+                    ).map((line, index) => (
                       <div 
                         key={index}
                         className="w-full font-normal"
                       >
-                        <p className="block leading-[21px]">{desc}</p>
+                        <p className="block leading-[21px]">{line}</p>
                       </div>
                     ))}
                   </div>

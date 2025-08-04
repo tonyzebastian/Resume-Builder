@@ -131,12 +131,13 @@ export function validateExperience(experience: Experience): ValidationResult {
   }
   
   // Validate description
-  if (!experience.description || experience.description.length === 0) {
-    errors.push('At least one description bullet point is required');
+  if (!experience.description || experience.description.trim().length === 0) {
+    errors.push('Job description is required');
   } else {
-    experience.description.forEach((desc, index) => {
+    const lines = experience.description.split('\n').filter(line => line.trim() !== '');
+    lines.forEach((desc, index) => {
       if (!validateDescriptionLength(desc)) {
-        errors.push(`Description bullet point ${index + 1} is invalid or too long`);
+        errors.push(`Description line ${index + 1} is invalid or too long`);
       }
     });
   }
