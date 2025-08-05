@@ -59,7 +59,7 @@ export default function Header({ resumeData }: HeaderProps) {
         </a>
 
         <a
-          href="https://github.com"
+          href="https://github.com/tonyzebastian/Resume-Builder"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Visit GitHub repository"
