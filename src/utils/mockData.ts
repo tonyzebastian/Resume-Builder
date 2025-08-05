@@ -89,6 +89,10 @@ export function generateDefaultSkills(): Skills {
         'Photoshop & Illustrator',
         'DaVinci Resolve'
       ],
+      'Education': [
+        'PG Diploma in Management',
+        'SDMIMD / 2016',
+      ],
     },
     // Keep old structure for backward compatibility
     competencies: [],

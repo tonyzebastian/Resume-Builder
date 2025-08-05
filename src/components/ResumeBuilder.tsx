@@ -30,9 +30,9 @@ function ResumeBuilderContent() {
       {/* Main Content Area - Two Columns */}
       <div className="flex flex-1 min-h-0">
         {/* Left Sidebar - Edit Forms */}
-        <div className="w-[512px] border-r border-slate-100 bg-background flex-shrink-0">
+        <div className="w-[320px] sm:w-[400px] md:w-[480px] lg:w-[512px] border-r border-slate-100 bg-background flex-shrink-0">
           <ScrollArea className="h-full">
-            <div className="px-6 py-6 space-y-0">
+            <div className="px-3 sm:px-4 md:px-6 py-6 space-y-0">
               {/* Personal Information */}
               <PersonalInfoForm
                 data={resumeData.personalInfo}
@@ -84,17 +84,17 @@ function ResumeBuilderContent() {
 
         {/* Right Side - Preview Canvas */}
         <div className="flex-1 bg-gray-50 flex flex-col min-w-0">
-          <ScrollArea className="h-full">
-            <div className="p-6 flex justify-center">
+          <div className="h-full overflow-auto">
+            <div className="p-3 sm:p-4 md:p-6 flex justify-center" style={{ minWidth: "850px" }}>
               {/* Fixed A4 size container for preview */}
               <div
-                className="bg-white border border-slate-100 shadow-lg overflow-hidden"
+                className="bg-white border border-slate-100 shadow-lg overflow-hidden flex-shrink-0"
                 style={{ width: "794px", height: "1123px" }}
               >
                 <ResumePreview data={resumeData} />
               </div>
             </div>
-          </ScrollArea>
+          </div>
         </div>
       </div>
     </div>
