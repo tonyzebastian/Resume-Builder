@@ -38,8 +38,8 @@ export default function Header({ resumeData }: HeaderProps) {
   return (
     <header className="flex items-center justify-between px-6 py-3 border-b border-slate-200">
       <div className="flex items-center gap-2">
-        <UIGlowLogoMini />
-        <h1 className="font-semibold text-foreground text-xl tex-slate-900">The Simplest Resume Builder</h1>
+        <img src="/logo.png" alt="Resume Builder Logo" className="w-8 h-8" />
+        <h1 className="font-semibold text-xl text-slate-900">The Simplest Resume Builder</h1>
 
       </div>
       
@@ -62,6 +62,7 @@ export default function Header({ resumeData }: HeaderProps) {
           href="https://github.com"
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="Visit GitHub repository"
           className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-slate-300 hover:border-blue-500 bg-background hover:bg-accent hover:text-accent-foreground p-2 text-slate-600 "
         >
           <Github className="w-4 h-4" />

@@ -19,6 +19,7 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: ['Helvetica', 'Arial', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        serif: ['Georgia', 'Cambria', 'Times New Roman', 'Times', 'serif'],
       },
       fontWeight: {
         normal: '400',

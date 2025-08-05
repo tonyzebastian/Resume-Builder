@@ -2,7 +2,7 @@
 
 A modern, clean resume builder designed for maximum ATS compatibility and professional presentation. Create beautiful resumes with real-time preview and export to high-quality PDF.
 
-![Resume Builder Screenshot](https://via.placeholder.com/800x400/f8fafc/334155?text=Resume+Builder+Preview)
+![Resume Builder Screenshot](https://resume-builder-dun-rho.vercel.app/preview.png)
 
 ## ✨ Features
 

@@ -17,7 +17,7 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
-    // Ensure fonts are copied to dist
+    // Ensure fonts are copied to dist and optimize chunks
     rollupOptions: {
       output: {
         assetFileNames: (assetInfo) => {
@@ -25,6 +25,12 @@ export default defineConfig({
             return 'fonts/[name].[ext]';
           }
           return 'assets/[name]-[hash].[ext]';
+        },
+        manualChunks: {
+          'pdf-lib': ['pdf-lib'],
+          'react-vendor': ['react', 'react-dom'],
+          'ui-vendor': ['@radix-ui/react-scroll-area', '@radix-ui/react-switch'],
+          'utils': ['sonner', '@vercel/speed-insights']
         }
       }
     }
