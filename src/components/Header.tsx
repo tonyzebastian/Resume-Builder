@@ -1,6 +1,4 @@
-import React from 'react';
 import { toast } from 'sonner';
-import UIGlowLogoMini from './ui/LogoMini';
 import { generateResumePDF, downloadPDF } from '../utils/pdfGenerator';
 import { ResumeData } from '../types/ResumeData';
 import { Github, Download } from 'lucide-react';

@@ -10,7 +10,7 @@ A modern, clean resume builder designed for maximum ATS compatibility and profes
 - **👀 Real-time Preview**: See your resume update instantly as you type
 - **📄 PDF Export**: Generate high-quality PDFs with precise formatting
 - **💾 Auto-save**: Your work is automatically saved to your browser
-- **📱 Responsive**: Works perfectly on desktop, tablet, and mobile
+- **🖥️ Desktop Optimized**: Optimized for desktop and laptop computers for the best editing experience
 - **⚡ Fast**: Built with modern tools for lightning-fast performance
 - **🎨 Professional Design**: Clean typography using IBM Plex Sans
 - **♿ Accessible**: Keyboard navigation and screen reader friendly
@@ -94,7 +94,7 @@ This resume builder follows a **"less is more"** approach:
 - **Professional Typography**: IBM Plex Sans for modern readability
 - **Consistent Spacing**: Carefully crafted spacing for visual hierarchy
 - **Subtle Interactions**: Hover effects and smooth transitions
-- **Mobile First**: Responsive design that works everywhere
+- **Desktop First**: Optimized for desktop and laptop screens
 
 ## 📁 Project Structure
 
@@ -145,12 +145,12 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 - Use Tailwind CSS for styling
 - Ensure accessibility compliance
 
-## 📱 Browser Support
+## 🖥️ System Requirements
 
-- Chrome (latest 2 versions)
-- Firefox (latest 2 versions)
-- Safari (latest 2 versions)
-- Edge (latest 2 versions)
+- **Desktop or Laptop Computer**: This app is optimized for desktop use
+- **Screen Resolution**: Minimum 1024px width recommended
+- **Browsers**: Chrome, Firefox, Safari, or Edge (latest 2 versions)
+- **Note**: Mobile devices will show a message directing users to use a desktop
 
 ## 🐛 Known Issues
 
@@ -198,7 +198,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [ ] Multiple templates
 - [ ] Import from LinkedIn
 - [ ] ATS compatibility scoring
-- [ ] Mobile app
+- [ ] Mobile responsive version
 
 See [cursor.md](cursor.md) for detailed improvement plans.
 
