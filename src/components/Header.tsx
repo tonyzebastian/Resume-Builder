@@ -1,7 +1,7 @@
 import { toast } from 'sonner';
 import { generateResumePDF, downloadPDF } from '../utils/pdfGenerator';
 import { ResumeData } from '../types/ResumeData';
-import { Github, Download } from 'lucide-react';
+import { Github, Download, Twitter } from 'lucide-react';
 
 interface HeaderProps {
   resumeData: ResumeData;
@@ -43,17 +43,12 @@ export default function Header({ resumeData }: HeaderProps) {
       
       <div className="flex items-center gap-4">
         <a
-          href="http://tonyzeb.design"
+          href="https://x.com/tonyzeb_design"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-xl bg-muted hover:bg-muted/80 transition-colors border border-slate-300 hover:border-blue-500"
+          className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-slate-300 hover:border-blue-500 bg-background hover:bg-accent hover:text-accent-foreground p-2 text-slate-600 "
         >
-          <img 
-            src="/profile.jpg" 
-            alt="Tony's profile"
-            className="w-7 h-7 rounded-md object-cover"
-          />
-          <span className="text-sm font-medium text-foreground">tonyzeb.design</span>
+          <Twitter className="w-4 h-4" />
         </a>
 
         <a

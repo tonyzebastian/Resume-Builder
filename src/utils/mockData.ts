@@ -13,7 +13,7 @@ export function generateDefaultPersonalInfo(): PersonalInfo {
   return {
     name: 'Tony Sebastian',
     title: 'Senior Product Designer',
-    subTitle: 'Design Systems & UX Foundation',
+    subTitle: 'Design & Engineering',
     email: 'xxxx_xxxx@gmail.com',
     website: 'tonyzeb.design',
   };
@@ -29,7 +29,7 @@ export function generateDefaultExperience(): Experience[] {
       startDate: '06/2022',
       endDate: '06/2025',
       current: false,
-      description: 'Led and scaled Postman\'s design system as part of the UX Foundation: built and governed reusable components, improved app performance, embedded with Growth for cohesive experiences, defined Postman Vision 2024, and enabled rapid high-fidelity prototyping via a code-based Postman clone.\n\nSpearheaded 0→1 API observability initiatives: drove hypothesis-led experiments (schema/collection generation, Live Collections, API Design Health), and partnered cross-functionally to validate and iterate on early product direction.',
+      description: 'Led and scaled Postman\'s design system as part of the UX Foundation: built and governed reusable components, improved app performance, embedded with Growth for cohesive experiences, defined Postman Vision 2024, and enabled rapid high-fidelity prototyping via a code-based Postman clone.\n\nLed 0 to 1 API observability work with hypothesis-driven experiments (schema/collection generation, Live Collections), built in-context prototypes to surface observability, and collaborated across teams to validate and refine early product direction.',
     },
     {
       id: '2',
@@ -39,7 +39,7 @@ export function generateDefaultExperience(): Experience[] {
       startDate: '11/2020',
       endDate: '05/2022',
       current: false,
-      description: 'Lead 0→1 development of a data analytics platform MVP—designing workflows for unified enterprise data ingestion, query-driven insight exploration, and rich trend visualizations through rapid ideation, prototyping, and user-informed validation.\n\nBuilt and owned the company\'s first design system, Sonic, while leading all product design efforts; scaled the design function by hiring and onboarding designers and drove consistency across emerging features.',
+      description: 'Lead 0 to 1 development of a data analytics platform MVP—designing workflows for unified enterprise data ingestion, query-driven insight exploration, and rich trend visualizations through rapid ideation, prototyping, and user-informed validation.\n\nBuilt and owned the company\'s first design system, Sonic, while leading all product design efforts; scaled the design function by hiring and onboarding designers and drove consistency across emerging features.',
     },
     {
       id: '3',
